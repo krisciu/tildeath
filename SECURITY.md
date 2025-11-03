@@ -1,18 +1,37 @@
 # Security
 
-This project includes a fallback Anthropic API key for convenience.
-This key can be revoked at any time without notice.
+## API Key Required
 
-For production use or extended play, get your own key:
-https://console.anthropic.com/
+This game requires an Anthropic API key to run. No key is included in the repository.
 
-Set it with:
+Get your own key at: https://console.anthropic.com/
+
+## Setting Your Key
+
+**Option 1: Environment Variable (Temporary)**
 ```bash
-export ANTHROPIC_API_KEY=your_key_here
+export ANTHROPIC_API_KEY='your-key-here'
+tildeath
 ```
 
-Or create a `.env` file:
+**Option 2: .env File (Persistent)**
 ```bash
-echo "ANTHROPIC_API_KEY=your_key_here" > ~/.ATH/.env
+echo "ANTHROPIC_API_KEY=your-key-here" > ~/.ATH/.env
+tildeath
 ```
+
+## Sharing Keys
+
+If you want to share a key with friends:
+- Share it privately (Discord, text, etc.)
+- Set usage limits in Anthropic console
+- Monitor usage regularly
+- Revoke if abused
+
+## Cost Estimates
+
+Each playthrough costs approximately:
+- Short (5-10 choices): $0.05-0.10
+- Medium (10-20 choices): $0.10-0.20
+- Long (20+ choices): $0.20+
 

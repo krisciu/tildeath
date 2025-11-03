@@ -26,25 +26,25 @@ An experimental text-based horror game that lives in your terminal. It's a Choos
 curl -fsSL https://raw.githubusercontent.com/krisciu/tildeath/main/install.sh | bash
 ```
 
+## Setup API Key
+
+Get a key at: https://console.anthropic.com/
+
+Then set it:
+```bash
+export ANTHROPIC_API_KEY='your-key-here'
+```
+
+Or create `~/.ATH/.env`:
+```bash
+echo "ANTHROPIC_API_KEY=your-key-here" > ~/.ATH/.env
+```
+
 ## Run
 
 ```bash
 tildeath
 ```
-
-Or if that doesn't work:
-```bash
-~/.ATH/main.py
-```
-
-## Your Own API Key (Optional)
-
-Export before running:
-```bash
-export ANTHROPIC_API_KEY=your_key_here
-```
-
-Get a key at: https://console.anthropic.com/
 
 ## How It Works
 

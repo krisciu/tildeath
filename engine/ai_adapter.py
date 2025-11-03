@@ -29,9 +29,15 @@ class AIAdapter:
             except ImportError:
                 pass
         
-        # Fallback to embedded key (revokable by maintainer)
+        # If still no key, show helpful error
         if not api_key:
-            api_key = "sk-ant-api03-fallback-key-placeholder"  # Replace before deployment
+            raise ValueError(
+                "\n\nNo API key found. Get one at: https://console.anthropic.com/\n"
+                "Then set it with:\n"
+                "  export ANTHROPIC_API_KEY='your-key-here'\n"
+                "Or create ~/.ATH/.env with:\n"
+                "  ANTHROPIC_API_KEY=your-key-here\n"
+            )
         
         self.client = Anthropic(api_key=api_key)
         self.model = os.getenv('MODEL_NAME', DEFAULT_MODEL)
