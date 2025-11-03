@@ -875,19 +875,22 @@ class MutationManager:
         instability = context.get('instability_level', 0)
         
         # Escalating frequency based on game progress
-        if choice_count <= 5:
-            # Early game: 5% chance, MODERATE only
-            base_chance = 0.05
+        if choice_count <= 3:
+            # Very early game: 10% chance, COMMON MODERATE only
+            base_chance = 0.10
             pool = [m for m in self.MODERATE_MUTATIONS if m.rarity == MutationRarity.COMMON]
-        elif choice_count <= 12:
-            # Mid game: 15% chance, MODERATE + some UNCOMMON
-            base_chance = 0.15
+        elif choice_count <= 8:
+            # Early game: 20% chance, all MODERATE
+            base_chance = 0.20
             pool = self.MODERATE_MUTATIONS.copy()
-            # Add some uncommon wild
-            pool.extend([m for m in self.WILD_MUTATIONS if m.rarity == MutationRarity.UNCOMMON])
-        elif choice_count <= 20:
-            # Late game: 30% chance, WILD available, RARE possible
+        elif choice_count <= 15:
+            # Mid game: 30% chance, MODERATE + UNCOMMON WILD
             base_chance = 0.30
+            pool = self.MODERATE_MUTATIONS.copy()
+            pool.extend([m for m in self.WILD_MUTATIONS if m.rarity in [MutationRarity.COMMON, MutationRarity.UNCOMMON]])
+        elif choice_count <= 25:
+            # Late game: 40% chance, all MODERATE + WILD, RARE possible
+            base_chance = 0.40
             pool = self.MODERATE_MUTATIONS.copy() + self.WILD_MUTATIONS.copy()
         else:
             # End game: 50% chance, everything including ULTRA_RARE

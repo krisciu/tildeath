@@ -68,7 +68,7 @@ DISCOVERY_RATE = 3  # Major revelation every N choices
 
 # Mutation System (rule-breaking)
 MUTATION_BASE_CHANCE = 0.05  # 5% base per turn
-MUTATION_COOLDOWN = (2, 4)  # Choices between mutations (reduced from 3-6)
-MUTATION_GUARANTEED_AT = [5, 10, 15, 20]  # Specific choice numbers (earlier and more frequent)
+MUTATION_COOLDOWN = (1, 3)  # Choices between mutations (reduced for more frequency)
+MUTATION_GUARANTEED_AT = [2, 6, 10, 15, 20]  # Specific choice numbers (first mutation at turn 2!)
 WILD_MUTATIONS_AT_REVELATION = 3  # Unlock wild mutations at this revelation level
 
