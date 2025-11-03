@@ -23,6 +23,8 @@ from engine.renderer import Renderer
 from engine.typography import TypographyEngine
 from engine.session import SessionManager
 from engine.truth_tracker import TruthTracker
+from engine.loading_effects import ThematicLoader
+from engine.endings import EndingsManager
 from config.prompts import get_revelation_modifiers
 
 
@@ -39,6 +41,8 @@ class Game:
             self.typography = TypographyEngine()
             self.session = SessionManager()
             self.truth = TruthTracker()
+            self.loader = ThematicLoader(self.renderer.console)
+            self.endings = EndingsManager()
             
             # Load truth state from ghost memory
             truth_state = self.session.get_truth_state()
@@ -63,7 +67,7 @@ class Game:
                 self.renderer.show_ghost_memory(fragments)
             
             # Generate opening scene
-            self.renderer.show_loading(self.typography.get_loading_glitch(), 1.5)
+            self.loader.show(duration_estimate=1.5, revelation_level=0, previous_choice="", choice_count=0)
             opening = self.ai.generate_opening()
             
             if not opening.get('error'):
@@ -77,19 +81,31 @@ class Game:
             
             # Main game loop
             while True:
-                # Check for game over
-                is_over, death_message = self.story.is_game_over()
-                if is_over:
-                    narrator_comment = self.narrator.get_death_message(death_message)
-                    self.renderer.show_game_over(
-                        death_message, 
-                        narrator_comment, 
-                        self.story.choice_count
-                    )
-                    break
-                
                 # Get current context
                 context = self.story.get_context()
+                context['session_count'] = session_count  # Add for ending checks
+                
+                # Check for endings (NEW SYSTEM)
+                ending = self.endings.check_for_ending(context)
+                if ending:
+                    # Show ending art
+                    ending_art = self.endings.get_ending_art(ending.type)
+                    self.renderer.console.print(ending_art, style="bold yellow", justify="center")
+                    time.sleep(1.0)
+                    
+                    # Show ending text
+                    ending_text = self.endings.get_ending_text(ending, context)
+                    self.renderer.console.print(ending_text, style="bold cyan")
+                    time.sleep(2.0)
+                    break
+                
+                # Check for low health warning
+                if self.endings.should_warn_low_health(context['character_stats']['health']):
+                    self.renderer.console.print("\n[bold red]You're close to the end.[/]")
+                    time.sleep(0.8)
+                    self.renderer.console.print("[dim red]Your body is failing.[/]")
+                    time.sleep(1.2)
+                
                 visual_intensity = context['visual_intensity']
                 
                 # Check truth tracker milestones
@@ -114,6 +130,18 @@ class Game:
                     context['hidden_stats']['sanity'],
                     context['hidden_stats']['trust']
                 )
+                
+                # Generate and show ASCII art at key moments
+                art = self.ai.generate_art_for_context(context)
+                if art:
+                    self.loader.show_art_loading("visual manifestation")
+                    self.renderer.console.print("\n")
+                    # Apply corruption to art if sanity is low
+                    if context['hidden_stats']['sanity'] < 3:
+                        art = self.typography.apply_glitch(art, 0.1)
+                    self.renderer.console.print(art, style="bold yellow", justify="center")
+                    self.renderer.console.print("\n")
+                    time.sleep(1.5)
                 
                 # Display narrative (always use opening which contains current AI response)
                 narrative = opening.get('narrative', '')
@@ -200,8 +228,20 @@ class Game:
                 # Process choice
                 self.story.process_choice(chosen_text, choice_idx)
                 
+                # Show consequence feedback if choice was dangerous
+                consequence_feedback = self.story.get_consequence_feedback(self.story.last_danger_level)
+                if consequence_feedback:
+                    self.renderer.console.print(f"\n[dim red]{consequence_feedback}[/]")
+                    time.sleep(1.0)
+                
                 # Generate next scene with revelation context
-                self.renderer.show_loading(self.typography.get_loading_glitch(), 1.0)
+                # Use thematic loader instead of simple loading
+                self.loader.show(
+                    duration_estimate=2.0,
+                    revelation_level=self.truth.revelation_level,
+                    previous_choice=chosen_text,
+                    choice_count=context['choice_count']
+                )
                 
                 # Add revelation modifiers to context
                 current_context = self.story.get_context()

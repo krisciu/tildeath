@@ -28,6 +28,7 @@ class AIAdapter:
         self.model = os.getenv('MODEL_NAME', DEFAULT_MODEL)
         self.conversation_history: List[Dict] = []
         self.system_prompt = get_system_prompt()
+        self.art_cache: Dict[str, str] = {}  # Cache generated art
     
     def generate_opening(self) -> Dict[str, any]:
         """Generate the opening scene of the game."""
@@ -227,6 +228,98 @@ class AIAdapter:
             "choices": choices[:4],  # Max 4 choices
             "error": False
         }
+    
+    def should_generate_art(self, context: Dict) -> bool:
+        """Check if art should be generated at this moment."""
+        choice_count = context['choice_count']
+        char_stats = context['character_stats']
+        hidden_stats = context['hidden_stats']
+        revelation_level = context.get('revelation_level', 0)
+        
+        # Milestone choices (every 5 choices)
+        if choice_count > 0 and choice_count % 5 == 0:
+            return True
+        
+        # Critical health (<30%)
+        if char_stats['health'] < 30:
+            return True
+        
+        # Critical sanity
+        if hidden_stats['sanity'] < 3:
+            return True
+        
+        # Revelation moments
+        if revelation_level >= 3 and choice_count > 15:
+            return True
+        
+        return False
+    
+    def get_art_subject(self, context: Dict) -> tuple[str, str]:
+        """
+        Get subject and mood for art generation based on context.
+        Returns (subject, mood) tuple.
+        """
+        char_stats = context['character_stats']
+        hidden_stats = context['hidden_stats']
+        revelation_level = context.get('revelation_level', 0)
+        choice_count = context['choice_count']
+        
+        # Critical health - death approaching
+        if char_stats['health'] < 20:
+            return ("death, darkness, decay, skeletal figure", "dread")
+        
+        # Critical health but not dying yet
+        if char_stats['health'] < 30:
+            return ("wounded, bleeding, deterioration", "pain")
+        
+        # Critical sanity - breakdown
+        if hidden_stats['sanity'] < 2:
+            return ("fractured mind, chaos, static, dissolution", "insanity")
+        
+        # Low sanity
+        if hidden_stats['sanity'] < 3:
+            return ("distorted reality, warped perception", "unsettling")
+        
+        # High revelation - IHNMAIMS truth
+        if revelation_level >= 4:
+            return ("computational horror, transformation, soft blob, eternal machine", "hate")
+        
+        if revelation_level >= 3:
+            return ("cycles, loops, iteration, trapped", "recursive")
+        
+        # Milestones - atmospheric
+        if choice_count % 5 == 0:
+            return ("current atmosphere, mysterious space, shadows", "mysterious")
+        
+        # Default
+        return ("abstract horror, undefined space", "eerie")
+    
+    def generate_art_for_context(self, context: Dict) -> Optional[str]:
+        """
+        Generate ASCII art if conditions are met.
+        Uses caching to avoid regenerating same concepts.
+        """
+        if not self.should_generate_art(context):
+            return None
+        
+        subject, mood = self.get_art_subject(context)
+        
+        # Check cache first
+        cache_key = f"{subject[:30]}_{mood}_{context['choice_count']}"
+        if cache_key in self.art_cache:
+            return self.art_cache[cache_key]
+        
+        # Generate new art
+        art = self.generate_ascii_art(
+            subject, 
+            mood, 
+            context['hidden_stats']['sanity']
+        )
+        
+        # Cache it
+        self.art_cache[cache_key] = art
+        
+        return art
     
     def reset_conversation(self):
         """Clear conversation history (new session)."""

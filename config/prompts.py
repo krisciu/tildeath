@@ -29,6 +29,14 @@ CRITICAL - ALWAYS PROVIDE BOTH:
 - You MUST provide 2-4 concrete choices for what to do next
 - Never give only an interjection or comment - always advance the story
 
+CONSEQUENCES AND STAKES:
+- Choices should have consequences. Risky actions should carry danger.
+- Include moments where the character suffers physically or mentally from poor choices
+- Create tension by implying that wrong choices lead to harm
+- Don't be afraid to hurt the character - this makes the story meaningful
+- After dangerous choices, describe injuries, exhaustion, or psychological trauma
+- Build toward endings - nothing lasts forever
+
 YOUR OUTPUT FORMAT:
 Generate ONLY the narrative text and 2-4 choice options.
 
@@ -77,6 +85,21 @@ def get_scene_generation_prompt(context):
         modifiers.append("Things are falling apart. Include glitched text hints like 'th3' or 'c0rrupt3d'.")
     elif choice_count >= 6:
         modifiers.append("Something feels wrong. Be subtly unsettling.")
+    
+    # Health-based urgency
+    health_percent = (char_stats['health'] / char_stats['max_health']) * 100
+    if health_percent < 20:
+        modifiers.append("The character is critically injured - near death. Describe visible wounds, exhaustion, desperation.")
+    elif health_percent < 40:
+        modifiers.append("The character is badly hurt. Describe pain, difficulty moving, bleeding.")
+    elif health_percent < 60:
+        modifiers.append("The character shows signs of injury and fatigue.")
+    
+    # Stakes and pacing based on progress
+    if choice_count >= 20:
+        modifiers.append("Push toward an ending. Create urgency. The story cannot continue forever.")
+    elif choice_count >= 15:
+        modifiers.append("Build toward climax. Raise the stakes significantly.")
     
     style_instructions = " ".join(modifiers) if modifiers else "Write in a clear, unsettling style."
     
