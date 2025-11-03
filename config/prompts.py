@@ -483,8 +483,87 @@ def get_mutation_prompt_context(active_mutations: List) -> str:
                 lines.append("- Player sees story as 'source code'")
                 lines.append("- They can try to 'edit' it")
                 lines.append("- Their edits may or may not work")
+            
+            # ====================================================================
+            # SYSTEM HORROR MUTATIONS
+            # ====================================================================
+            
+            elif mutation.key == 'terminal_multiplication':
+                lines.append("⚠ TERMINAL MULTIPLICATION:")
+                lines.append("- Multiple terminal windows have opened")
+                lines.append("- Each shows different perspective of same scene")
+                lines.append("- Weave this into narrative: 'You see yourself from multiple angles'")
+                lines.append("- Make player question which window is 'real'")
+            
+            elif mutation.key == 'process_haunting':
+                lines.append("⚠ PROCESS HAUNTING:")
+                lines.append("- Game processes have disturbing names")
+                lines.append("- Fake process list will be shown")
+                lines.append("- Integrate: 'Check your running processes. Something's wrong'")
+            
+            elif mutation.key == 'clipboard_corruption':
+                lines.append("⚠ CLIPBOARD CORRUPTION:")
+                lines.append("- Cryptic text has been copied to clipboard")
+                lines.append("- Player will discover when they paste")
+                lines.append("- Hint: 'Something copies itself. Paste it somewhere'")
+            
+            elif mutation.key == 'notification_storm':
+                lines.append("⚠ NOTIFICATION STORM:")
+                lines.append("- System notifications appearing")
+                lines.append("- Integrate: 'Your computer wants to tell you something'")
+                lines.append("- Make it feel like the story is breaking containment")
+            
+            elif mutation.key == 'terminal_title_takeover':
+                lines.append("⚠ TERMINAL TITLE TAKEOVER:")
+                lines.append("- Window title is changing")
+                lines.append("- Integrate: 'Look at your window title. It knows'")
+                lines.append("- Title reflects story state")
+            
+            elif mutation.key == 'screen_possession':
+                lines.append("⚠ SCREEN POSSESSION:")
+                lines.append("- Terminal appearance is corrupting")
+                lines.append("- Visual glitches, cursor issues")
+                lines.append("- Integrate: 'The screen itself begins to change'")
+            
+            elif mutation.key == 'fake_system_crash':
+                lines.append("⚠ FAKE SYSTEM CRASH:")
+                lines.append("- Fake crash screen will appear")
+                lines.append("- Build tension: 'Everything stops. The system fails'")
+                lines.append("- Then recovery: '...recovering...'")
+            
+            elif mutation.key == 'file_system_illusion':
+                lines.append("⚠ FILE SYSTEM ILLUSION:")
+                lines.append("- Fake files appearing in listings")
+                lines.append("- Files with story-relevant names")
+                lines.append("- Integrate: 'Files appear that shouldn't exist'")
+            
+            elif mutation.key == 'network_phantom':
+                lines.append("⚠ NETWORK PHANTOM:")
+                lines.append("- Fake network requests happening")
+                lines.append("- Connecting to fictional servers")
+                lines.append("- Integrate: 'Something is trying to connect'")
+            
+            elif mutation.key == 'echo_chamber':
+                lines.append("⚠ ECHO CHAMBER:")
+                lines.append("- Second terminal mirrors player's actions")
+                lines.append("- Delayed echo effect")
+                lines.append("- Integrate: 'You see yourself. Delayed. Watching'")
+            
+            elif mutation.key == 'background_persistence':
+                lines.append("⚠ BACKGROUND PERSISTENCE:")
+                lines.append("- Notifications scheduled for after game ends")
+                lines.append("- Ominous: 'The story will remember you'")
+                lines.append("- Blur line between game and reality")
         
         lines.append("")
+    
+    lines.append("SYSTEM HORROR CONTEXT:")
+    lines.append("- Terminal windows can multiply, titles can change")
+    lines.append("- System notifications may appear with story content")
+    lines.append("- Process names may show disturbing values")
+    lines.append("- Weave these into narrative naturally")
+    lines.append("- Make player question what's real vs game")
+    lines.append("")
     
     lines.append("IMPORTANT: Weave mutations naturally into narrative!")
     lines.append("Don't announce them explicitly - let player discover through gameplay.")

@@ -665,6 +665,154 @@ class MutationManager:
             "You regain control",
             False
         ),
+        
+        # ====================================================================
+        # SYSTEM HORROR MUTATIONS - Ultra-rare system-level effects
+        # ====================================================================
+        
+        Mutation(
+            "Terminal Multiplication",
+            "terminal_multiplication",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "The terminal splits. You see yourself from multiple angles",
+            "Reality fractures. Multiple perspectives emerge",
+            "Multiple terminal windows open",
+            3,
+            False,
+            "The extra windows close themselves",
+            True
+        ),
+        Mutation(
+            "Process Haunting",
+            "process_haunting",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Game appears in process list with disturbing names",
+            "Check your running processes. Something's wrong",
+            "Fake process list with story processes",
+            4,
+            True,
+            "The processes normalize",
+            False
+        ),
+        Mutation(
+            "Clipboard Corruption",
+            "clipboard_corruption",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Copies cryptic messages to clipboard without warning",
+            "Your fingers move without thinking. Something copies itself",
+            "Text copied to system clipboard",
+            2,
+            True,
+            "Your clipboard returns to normal",
+            False
+        ),
+        Mutation(
+            "Notification Storm",
+            "notification_storm",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "OS notifications appear with story content",
+            "Your computer wants to tell you something",
+            "Multiple system notifications",
+            1,
+            False,
+            "The notifications stop",
+            False
+        ),
+        Mutation(
+            "Terminal Title Takeover",
+            "terminal_title_takeover",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Window title changes to reflect story state",
+            "Look at your window title. It knows",
+            "Terminal title changes dynamically",
+            3,
+            True,
+            "The title returns to normal",
+            False
+        ),
+        Mutation(
+            "Screen Possession",
+            "screen_possession",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Terminal appearance corrupts",
+            "The screen itself begins to change",
+            "Visual terminal corruption",
+            2,
+            False,
+            "The screen stabilizes",
+            False
+        ),
+        Mutation(
+            "Fake System Crash",
+            "fake_system_crash",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Displays fake kernel panic / BSOD",
+            "Everything stops. The system fails",
+            "Fake crash screen",
+            0,
+            False,
+            "...recovering...",
+            False
+        ),
+        Mutation(
+            "File System Illusion",
+            "file_system_illusion",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Pretends to create files in home directory",
+            "Files appear that shouldn't exist",
+            "Fake file listing",
+            2,
+            False,
+            "The files were never real",
+            False
+        ),
+        Mutation(
+            "Network Phantom",
+            "network_phantom",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Fake network requests to fictional servers",
+            "Something is trying to connect",
+            "Fake network activity",
+            1,
+            False,
+            "Connection terminated",
+            False
+        ),
+        Mutation(
+            "Echo Chamber",
+            "echo_chamber",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Opens second terminal that mirrors your choices",
+            "You see yourself. Delayed. Watching",
+            "Echo terminal opens",
+            3,
+            False,
+            "The echo fades",
+            False
+        ),
+        Mutation(
+            "Background Persistence",
+            "background_persistence",
+            MutationType.WILD,
+            MutationRarity.ULTRA_RARE,
+            "Game schedules notifications after 'exit'",
+            "The story will remember you",
+            "Delayed notifications scheduled",
+            0,
+            False,
+            "But will it let you go?",
+            False
+        ),
     ]
     
     def __init__(self):

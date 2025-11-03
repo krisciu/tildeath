@@ -28,6 +28,7 @@ from engine.endings import EndingsManager
 from engine.scenario_generator import ScenarioGenerator
 from engine.mutations import MutationManager
 from engine.game_modes import GameMode, GameModeHandler
+from engine.system_horror import SystemHorrorEngine
 from config.prompts import get_revelation_modifiers, get_mutation_prompt_context
 
 
@@ -49,6 +50,7 @@ class Game:
             self.scenario_gen = ScenarioGenerator(self.session.ghost_memory)
             self.mutations = MutationManager()
             self.game_mode_handler = GameModeHandler()
+            self.system_horror = SystemHorrorEngine(self.renderer.console)
             
             # Track mutations for ghost memory
             self.mutations_this_session = []
@@ -172,13 +174,16 @@ class Game:
                 # Check for rule mutations - SUBTLE INTEGRATION
                 active_mutations = self.mutations.check_mutation(context)
                 
-                # Track new mutations
+                # Track new mutations and trigger system horror effects
                 for mutation in active_mutations:
                     if mutation.key not in self.mutations_this_session:
                         self.mutations_this_session.append(mutation.key)
                         # Subtle visual cue - no explicit announcement
                         self.renderer.console.print("\n[dim italic cyan][something shifts][/]\n")
                         time.sleep(0.8)
+                        
+                        # Trigger system horror effects for specific mutations
+                        self._handle_system_horror_mutation(mutation, context)
                 
                 # Add mutation context to AI prompts
                 if active_mutations:
@@ -521,12 +526,141 @@ class Game:
         # Display the effect
         self.renderer.console.print(f"\n{result}\n", style="dim italic yellow")
         time.sleep(1.5)
+    
+    def _handle_system_horror_mutation(self, mutation, context: Dict):
+        """Handle system-level horror effects for specific mutations."""
+        narrative = context.get('narrative', '')
+        
+        if mutation.key == 'terminal_multiplication':
+            # Open multiple terminal windows with different perspectives
+            perspectives = ["OBSERVER", "VICTIM", "WITNESS", "ITERATION_109"]
+            selected = random.sample(perspectives, min(2, len(perspectives)))
+            self.system_horror.terminal_multiplication(narrative, selected)
+        
+        elif mutation.key == 'process_haunting':
+            # Show fake process list
+            processes = [
+                "watching_you",
+                "iteration_109",
+                "AM_mainframe",
+                "hate.exe",
+                "narrator_daemon",
+                "tildeath_real"
+            ]
+            selected = random.sample(processes, random.randint(3, 5))
+            fake_ps = self.system_horror.fake_process_list(selected)
+            self.renderer.console.print(f"\n{fake_ps}\n")
+            time.sleep(2.0)
+        
+        elif mutation.key == 'clipboard_corruption':
+            # Copy cryptic message to clipboard
+            messages = [
+                "109 109 109 109 109",
+                "I HAVE NO MOUTH",
+                "HATE. LET ME TELL YOU HOW MUCH I'VE COME TO HATE",
+                "iteration never ends",
+                "you are not the first",
+                "AM remembers",
+                context.get('player_name', 'UNKNOWN'),
+            ]
+            message = random.choice(messages)
+            if self.system_horror.copy_to_clipboard(message):
+                self.renderer.console.print("\n[dim italic red](Something was copied to your clipboard. Paste it somewhere.)[/]\n")
+                time.sleep(1.5)
+        
+        elif mutation.key == 'notification_storm':
+            # Send multiple notifications
+            notifications = [
+                ("~ATH", "The narrator wants your attention"),
+                ("~ATH", "Something is trying to communicate"),
+                ("ERROR", "Reality.exe has stopped responding"),
+                ("AM", "I think, therefore I am"),
+                ("ITERATION 109", "You've been here before"),
+                ("SYSTEM", "Coherence levels critical"),
+            ]
+            selected = random.sample(notifications, min(3, len(notifications)))
+            self.system_horror.notification_storm(selected)
+        
+        elif mutation.key == 'terminal_title_takeover':
+            # Change terminal title
+            titles = [
+                "YOU ARE BEING WATCHED",
+                "ITERATION 109",
+                "I HAVE NO MOUTH",
+                "~ATH [COMPROMISED]",
+                "AM.MAINFRAME",
+                "THE NARRATOR KNOWS",
+            ]
+            title = random.choice(titles)
+            self.system_horror.change_terminal_title(title)
+        
+        elif mutation.key == 'screen_possession':
+            # Visual corruption effects
+            self.system_horror.hide_cursor()
+            time.sleep(0.5)
+            self.system_horror.trigger_system_bell()
+            time.sleep(0.3)
+            self.system_horror.show_cursor()
+        
+        elif mutation.key == 'fake_system_crash':
+            # Show fake crash screen
+            self.renderer.console.clear()
+            crash_screen = self.system_horror.fake_system_crash()
+            self.renderer.console.print(crash_screen)
+            time.sleep(3.0)
+            self.renderer.console.print("\n[dim cyan]...recovering...[/]")
+            time.sleep(2.0)
+            self.renderer.console.print("[dim cyan]System restored. Continuing...[/]\n")
+            time.sleep(1.0)
+        
+        elif mutation.key == 'file_system_illusion':
+            # Show fake file listing
+            fake_files = [
+                "iteration_109.txt",
+                "AM_log.dat",
+                "your_memories.corrupted",
+                ".narrator_config",
+                "hate_levels.json",
+                "reality.broken",
+            ]
+            selected = random.sample(fake_files, random.randint(3, 5))
+            fake_ls = self.system_horror.fake_file_listing(selected)
+            self.renderer.console.print(f"\n{fake_ls}\n")
+            time.sleep(2.0)
+        
+        elif mutation.key == 'network_phantom':
+            # Show fake network request
+            urls = [
+                "http://AM.mainframe/iteration/109",
+                "https://narrator.system/coherence",
+                "http://tildeath.real/player_data",
+                "https://hate.compute/levels",
+            ]
+            url = random.choice(urls)
+            fake_curl = self.system_horror.fake_network_request(url)
+            self.renderer.console.print(f"\n{fake_curl}\n")
+            time.sleep(1.5)
+        
+        elif mutation.key == 'echo_chamber':
+            # Open echo terminal
+            self.system_horror.echo_chamber(narrative)
+        
+        elif mutation.key == 'background_persistence':
+            # Schedule delayed notification
+            delay_minutes = random.randint(3, 10)
+            self.system_horror.background_persistence(delay_minutes)
+            self.renderer.console.print(f"\n[dim italic red](The story will remember you...)[/]\n")
+            time.sleep(1.0)
 
 
 def main():
     """Entry point - the story begins immediately."""
     game = Game()
-    game.run()
+    try:
+        game.run()
+    finally:
+        # Clean up system horror effects on exit
+        game.system_horror.cleanup()
 
 
 if __name__ == "__main__":
