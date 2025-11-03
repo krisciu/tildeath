@@ -876,16 +876,21 @@ class MutationManager:
         # Check for combos
         self._check_combos()
         
-        # Return all currently active mutations
-        active = [m for m, _, _ in self.active_mutations]
+        # Return only mutations that are actually active (not fading/expired)
+        active = [m for m, turns, state in self.active_mutations if turns > 0]
         debug_log(f"[DEBUG MUTATION] Returning {len(active)} active mutations: {[m.name for m in active]}")
+        debug_log(f"[DEBUG MUTATION] Total tracked (including fading): {len(self.active_mutations)}")
         return active
     
     def _update_active_mutations(self):
         """Update durations and states of active mutations."""
+        from engine.debug import debug_log
+        
         updated = []
         
         for mutation, turns_remaining, state in self.active_mutations:
+            debug_log(f"[DEBUG MUTATION] Updating {mutation.name}: {turns_remaining} turns left, state={state}")
+            
             if turns_remaining > 0:
                 # Decrement duration
                 new_turns = turns_remaining - 1
@@ -893,15 +898,19 @@ class MutationManager:
                 # Update state
                 if new_turns == 0:
                     new_state = MutationState.FADING
+                    debug_log(f"[DEBUG MUTATION] {mutation.name} is FADING (will expire next turn)")
                 elif len(self.active_mutations) > 1:
                     new_state = MutationState.STACKING
                 else:
                     new_state = MutationState.ACTIVE
                 
                 updated.append((mutation, new_turns, new_state))
-            # If turns_remaining is 0, mutation expires
+            else:
+                # Mutation has expired
+                debug_log(f"[DEBUG MUTATION] {mutation.name} EXPIRED and removed")
         
         self.active_mutations = updated
+        debug_log(f"[DEBUG MUTATION] After update: {len(updated)} mutations still active")
     
     def _try_trigger_mutation(self, context: Dict) -> Optional[Mutation]:
         """Try to trigger a new mutation based on context."""

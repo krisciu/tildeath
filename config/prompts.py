@@ -446,18 +446,68 @@ def get_mutation_prompt_context(active_mutations: List) -> str:
     if not active_mutations:
         return ""
     
-    lines = ["\n═══ ACTIVE MUTATIONS ═══"]
-    lines.append("CRITICAL: The game's interaction model has changed!")
-    lines.append("")
+    lines = ["\n" + "="*50]
+    lines.append("⚠️ ACTIVE MUTATIONS - MUST APPLY ⚠️")
+    lines.append("="*50)
     
     for mutation in active_mutations:
-        lines.append(f"MUTATION: {mutation.name}")
-        lines.append(f"Effect: {mutation.description}")
-        lines.append(f"Narrative integration: {mutation.narrative_trigger}")
+        lines.append(f">>> MUTATION: {mutation.name} <<<")
+        lines.append(f"MANDATORY EFFECT: {mutation.description}")
+        lines.append(f"HOW TO APPLY: {mutation.narrative_trigger}")
         lines.append("")
         
         # Special instructions based on mutation type
-        if mutation.requires_special_input:
+        # First handle mutations that DON'T require special input (visual/narrative)
+        if not mutation.requires_special_input:
+            # These mutations MUST visibly affect the output
+            if 'stutter' in mutation.key or 'repetition' in mutation.key:
+                lines.append("⚠ APPLY TO NARRATIVE TEXT:")
+                lines.append("- Repeat words: 'The door door opens'")
+                lines.append("- Stutter sentences: 'You see see the the hallway'")
+                lines.append("- Make it obvious - 3-5 repetitions per paragraph")
+            
+            elif 'margin' in mutation.key or 'scattered' in mutation.key:
+                lines.append("⚠ APPLY TO CHOICE TEXT:")
+                lines.append("- Add random text in margins")
+                lines.append("- Scatter words across lines")
+                lines.append("- Make choices look visually broken")
+            
+            elif 'redaction' in mutation.key or 'censored' in mutation.key:
+                lines.append("⚠ APPLY TO NARRATIVE:")
+                lines.append("- Replace key words with ███ or [REDACTED]")
+                lines.append("- Censor 2-3 important words per paragraph")
+                lines.append("- Make player guess what was censored")
+            
+            elif 'duplicate' in mutation.key or 'echo' in mutation.key:
+                lines.append("⚠ APPLY TO CHOICES:")
+                lines.append("- Include 2 identical choices")
+                lines.append("- Or make choices that are suspiciously similar")
+                lines.append("- Player should notice something is wrong")
+            
+            elif 'hidden' in mutation.key:
+                lines.append("⚠ APPLY TO CHOICES:")
+                lines.append("- Include a 5th choice that's barely visible")
+                lines.append("- Or hide text within other text")
+                lines.append("- Make it discoverable but not obvious")
+            
+            elif 'unreliable' in mutation.key or 'rebellion' in mutation.key:
+                lines.append("⚠ NARRATIVE EFFECT:")
+                lines.append("- Narrator contradicts itself")
+                lines.append("- Or describes choices changing after player selects")
+                lines.append("- Make player question what they're reading")
+            
+            elif 'inflation' in mutation.key:
+                lines.append("⚠ APPLY TO CHOICES:")
+                lines.append("- Generate 6-8 choices instead of 2-5")
+                lines.append("- Make player overwhelmed with options")
+            
+            elif 'minimalist' in mutation.key:
+                lines.append("⚠ APPLY TO OUTPUT:")
+                lines.append("- Use only 1 sentence for narrative")
+                lines.append("- Provide only 2 choices")
+                lines.append("- Be extremely terse")
+        
+        elif mutation.requires_special_input:
             if mutation.key in ['open_dialogue', 'confession_booth', 'reality_argument', 'name_horror']:
                 lines.append("⚠ FREE-TEXT MODE:")
                 lines.append("- End narrative with a question or prompt")
@@ -588,17 +638,9 @@ def get_mutation_prompt_context(active_mutations: List) -> str:
         
         lines.append("")
     
-    lines.append("SYSTEM HORROR CONTEXT:")
-    lines.append("- Terminal windows can multiply, titles can change")
-    lines.append("- System notifications may appear with story content")
-    lines.append("- Process names may show disturbing values")
-    lines.append("- Weave these into narrative naturally")
-    lines.append("- Make player question what's real vs game")
-    lines.append("")
-    
-    lines.append("IMPORTANT: Weave mutations naturally into narrative!")
-    lines.append("Don't announce them explicitly - let player discover through gameplay.")
-    lines.append("═══════════════════════\n")
+    lines.append("="*50)
+    lines.append("CRITICAL: Mutations MUST be visible in your output!")
+    lines.append("="*50 + "\n")
     
     return "\n".join(lines)
 

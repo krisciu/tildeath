@@ -1,6 +1,7 @@
 """AI adapter for Claude API integration."""
 
 import os
+import random
 from typing import Dict, List, Optional
 from anthropic import Anthropic
 from config.prompts import (
@@ -78,6 +79,13 @@ class AIAdapter:
             return self._parse_response(content)
             
         except Exception as e:
+            # Debug logging
+            from engine.debug import debug_log
+            debug_log(f"[AI ERROR - OPENING SCENE] Full error: {str(e)}")
+            debug_log(f"[AI ERROR - OPENING SCENE] Error type: {type(e).__name__}")
+            if hasattr(e, 'response'):
+                debug_log(f"[AI ERROR - OPENING SCENE] Response: {e.response}")
+            
             # Error becomes part of the narrative
             return {
                 "narrative": f"[CONNECTION ERROR] ...or is it? Something doesn't want to start. {str(e)[:50]}",
@@ -165,6 +173,11 @@ class AIAdapter:
             return self._parse_response(content)
             
         except Exception as e:
+            # Debug logging
+            from engine.debug import debug_log
+            debug_log(f"[AI ERROR] Full error: {str(e)}")
+            debug_log(f"[AI ERROR] Error type: {type(e).__name__}")
+            
             # Errors become glitches in the narrative
             return {
                 "narrative": f"[S̴Y̷S̶T̸E̷M̴ ̸E̷R̶R̸O̷R̴] The narrator is having trouble remembering what happens next. ({str(e)[:40]}...)",
