@@ -204,9 +204,10 @@ class Game:
                 if self.ai.should_generate_art(context):
                     # Generate art within loading state (seamless)
                     with self.loader.start(revelation_level=self.truth.revelation_level, choice_count=context['choice_count'], message_override="manifesting..."):
+                        subject, mood = self.ai.get_art_subject(context)
                         art = self.ai.generate_ascii_art(
-                            self.ai._get_art_subject(context),
-                            self.ai._get_art_mood(context),
+                            subject,
+                            mood,
                             context['hidden_stats']['sanity']
                         )
                     
