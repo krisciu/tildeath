@@ -44,6 +44,8 @@ class AIAdapter:
         self.conversation_history: List[Dict] = []
         self.system_prompt = get_system_prompt()
         self.art_cache: Dict[str, str] = {}  # Cache generated art
+        self.recent_lengths: List[int] = []  # Track recent narrative lengths
+        self.recent_choice_counts: List[int] = []  # Track recent choice counts
     
     def generate_opening(self, scenario_data=None) -> Dict[str, any]:
         """Generate the opening scene of the game."""
@@ -87,9 +89,50 @@ class AIAdapter:
                 "error": True
             }
     
+    def get_variety_hint(self) -> str:
+        """Generate hints to encourage variety in output length."""
+        import random
+        
+        if len(self.recent_lengths) < 2:
+            return ""  # Not enough data yet
+        
+        # Check if recent outputs are too similar
+        avg_length = sum(self.recent_lengths) / len(self.recent_lengths)
+        avg_choices = sum(self.recent_choice_counts) / len(self.recent_choice_counts) if self.recent_choice_counts else 3
+        
+        hints = []
+        
+        # Encourage opposite of recent trend
+        if avg_length > 5:
+            hints.append("⚠ VARIETY: Last few responses were long. Try a SHORT, punchy response this time (2-3 sentences, 2 choices).")
+        elif avg_length < 3:
+            hints.append("⚠ VARIETY: Last few responses were brief. Try a LONGER, atmospheric response this time (6-7 sentences, 4-5 choices).")
+        
+        if avg_choices > 3.5:
+            hints.append("⚠ VARIETY: You've been giving many choices. Try fewer this time (2-3 choices).")
+        elif avg_choices < 2.5:
+            hints.append("⚠ VARIETY: You've been giving few choices. Try more this time (4-5 choices).")
+        
+        # Randomly suggest specific lengths
+        if random.random() < 0.3:
+            suggestions = [
+                "Try: 2 sentences, 2 choices (tense, immediate)",
+                "Try: 4 sentences, 3 choices (standard pacing)",
+                "Try: 6 sentences, 4 choices (detailed exploration)",
+                "Try: 7-8 sentences, 5 choices (expansive atmosphere)",
+            ]
+            hints.append(f"SUGGESTION: {random.choice(suggestions)}")
+        
+        return "\n".join(hints)
+    
     def generate_scene(self, context: Dict) -> Dict[str, any]:
         """Generate next scene based on current context."""
         try:
+            # Add variety hint to context
+            variety_hint = self.get_variety_hint()
+            if variety_hint:
+                context['variety_hint'] = variety_hint
+            
             prompt = get_scene_generation_prompt(context)
             
             response = self.client.messages.create(
@@ -199,6 +242,18 @@ class AIAdapter:
                 choice = line.lstrip('0123456789.-) ').strip()
                 if choice and len(choice) > 2:  # Must be more than 2 chars
                     choices.append(choice)
+        
+        # Track lengths for variety enforcement
+        if narrative:
+            sentence_count = len([s for s in narrative.split('.') if s.strip()])
+            self.recent_lengths.append(sentence_count)
+            if len(self.recent_lengths) > 5:
+                self.recent_lengths = self.recent_lengths[-5:]
+        
+        if choices:
+            self.recent_choice_counts.append(len(choices))
+            if len(self.recent_choice_counts) > 5:
+                self.recent_choice_counts = self.recent_choice_counts[-5:]
         
         # Fallback parsing if format wasn't followed
         if not narrative or len(choices) < 2:

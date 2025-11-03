@@ -28,9 +28,10 @@ IMPORTANT - PACING:
 - Later scenes (choices 11+): More experimental, unreliable, self-aware
 
 CRITICAL - ALWAYS PROVIDE BOTH:
-- You MUST provide actual narrative (3-5 sentences describing what happens)
-- You MUST provide 2-4 concrete choices for what to do next
+- You MUST provide actual narrative (VARIABLE LENGTH: 2-8 sentences - vary it!)
+- You MUST provide 2-5 concrete choices for what to do next (vary the count!)
 - Never give only an interjection or comment - always advance the story
+- VARY YOUR OUTPUT: Sometimes be brief (2 sentences, 2 choices), sometimes expansive (7 sentences, 5 choices)
 
 CONSEQUENCES AND STAKES:
 - Choices should have consequences. Risky actions should carry danger.
@@ -41,17 +42,24 @@ CONSEQUENCES AND STAKES:
 - Build toward endings - nothing lasts forever
 
 YOUR OUTPUT FORMAT:
-Generate ONLY the narrative text and 2-4 choice options.
+Generate ONLY the narrative text and 2-5 choice options.
 
 Format your response as:
-NARRATIVE: [the story text here - what actually happens, 3-5 full sentences]
+NARRATIVE: [the story text here - what actually happens, VARIABLE LENGTH: 2-8 sentences]
 CHOICES:
 1. [first choice - a concrete action]
 2. [second choice - a concrete action]
-3. [third choice - a concrete action, if applicable]
-4. [fourth choice - a concrete action, if applicable]
+3. [third choice - optional]
+4. [fourth choice - optional]
+5. [fifth choice - optional]
 
-Keep narrative to 3-5 sentences. Keep choices brief (under 10 words each)."""
+VARY YOUR LENGTH:
+- Sometimes: 2 short sentences, 2 choices (quick, tense moments)
+- Sometimes: 5-6 sentences, 4 choices (detailed exploration)
+- Sometimes: 7-8 sentences, 5 choices (expansive, atmospheric)
+- Mix it up! Don't always use the same length.
+
+Keep choices brief (under 12 words each)."""
 
 def get_scene_generation_prompt(context):
     """Generate a new scene based on current context."""
@@ -123,6 +131,9 @@ def get_scene_generation_prompt(context):
     # Narrative momentum (faster pacing)
     momentum_prompt = context.get('momentum_prompt', '')
     
+    # Variety enforcement
+    variety_hint = context.get('variety_hint', '')
+    
     # Build event progression section
     event_section = ""
     if event_urgency:
@@ -154,6 +165,8 @@ STYLE INSTRUCTIONS: {style_instructions}{revelation_hint}
 
 {momentum_prompt}
 
+{variety_hint}
+
 PROGRESSION REQUIREMENTS:
 - Every 2-3 choices: Major event must occur (chase sequence, transformation, discovery, confrontation)
 - AVOID: Vague atmosphere, "you sense something", unclear spaces, wandering
@@ -174,7 +187,7 @@ CRITICAL OUTPUT FORMAT:
 Generate your response in this EXACT format:
 
 NARRATIVE:
-[Write 3-5 sentences describing what happens based on their choice]
+[Write 2-8 sentences describing what happens - VARY THE LENGTH each time!]
 
 CONSEQUENCES:
 health: [number from -50 to +10, or 0 for no change]
@@ -186,6 +199,14 @@ CHOICES:
 2. [Second choice]
 3. [Third choice - optional]
 4. [Fourth choice - optional]
+5. [Fifth choice - optional]
+
+LENGTH VARIETY EXAMPLES:
+- Tense moment: 2 sentences, 2 choices
+- Normal scene: 4-5 sentences, 3 choices
+- Detailed exploration: 6-7 sentences, 4 choices
+- Expansive atmosphere: 7-8 sentences, 5 choices
+- MIX IT UP! Don't always use the same length!
 
 IMPORTANT: 
 - If the narrative describes injury/pain/damage, set negative health
@@ -368,12 +389,17 @@ subtly if appropriate to the ending type."""
     prompt += f"""
 
 REQUIREMENTS:
-1. Write 4-6 sentences describing the ending
+1. Write 3-8 sentences describing the ending (VARY THE LENGTH - sometimes brief, sometimes expansive)
 2. Connect to recent events: "{last_moment}"
 3. Make it FINAL - this is the conclusion
 4. Be visceral and specific, not vague
 5. End with a powerful final image or realization
 6. Match the tone of {ending_category}: {tone}
+
+LENGTH GUIDANCE:
+- Quick deaths: 3-4 sentences (brutal, immediate)
+- Atmospheric endings: 6-8 sentences (detailed, haunting)
+- Revelation endings: 5-7 sentences (build to realization)
 
 Write ONLY the ending narrative, no meta-commentary."""
     
@@ -411,9 +437,12 @@ Create an opening that:
 - Gives 2-4 choices that are concrete actions
 
 Remember your format:
-NARRATIVE: [3-5 sentences, clear and readable]
+NARRATIVE: [2-6 sentences, clear and readable - vary the length!]
 CHOICES:
 1. [choice]
 2. [choice]
-3. [choice]"""
+3. [choice - optional]
+4. [choice - optional]
+
+VARY YOUR OUTPUT: Sometimes brief (2 sentences, 2 choices), sometimes detailed (5-6 sentences, 4 choices)."""
 
